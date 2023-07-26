@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  cloud-run-python-template:
+    image: ${REGION}-docker.pkg.dev/${PROJECT}/${REPOSITORY}/cloud-run-python-template
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: uvicorn
+    command:
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+    ports:
+      - "8000:8000"

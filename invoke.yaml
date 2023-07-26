@@ -1,0 +1,9 @@
+run:
+  env:
+    name: dev
+  project: <Google Cloud Project ID>
+  artifact_registry:
+    repository: <Repository Name of Artifact Registry>
+    region: <Region of Artifact Registry>
+  cloud_run:
+    region: <Region of Cloud Run>
