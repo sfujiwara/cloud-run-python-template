@@ -11,6 +11,6 @@ COPY pyproject.toml pyproject.toml
 COPY poetry.lock poetry.lock
 RUN poetry install
 
-COPY app app
+COPY server server
 
-CMD ["exec", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD uvicorn server.main:app --host 0.0.0.0 --port ${PORT}

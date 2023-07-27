@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "cloud-run-examples"
+name = "cloud-run-python-examples"
 version = "0.1.0"
 description = ""
 authors = ["sfujiwara <shuhei.fujiwara@gmail.com>"]

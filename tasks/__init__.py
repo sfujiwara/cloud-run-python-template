@@ -29,6 +29,16 @@ def docker_push(ctx):
 
 
 @invoke.task
+def docker_run(ctx):
+    """Run Docker container."""
+    project = ctx["run"]["project"]
+    region_ar = ctx["run"]["artifact_registry"]["region"]
+    repository = ctx["run"]["artifact_registry"]["repository"]
+    cmd = f"PROJECT={project} REPOSITORY={repository} REGION={region_ar} docker-compose up"
+    ctx.run(cmd)
+
+
+@invoke.task
 def deploy(ctx):
     """Deploy Docker image to Cloud Run."""
     project = ctx["run"]["project"]

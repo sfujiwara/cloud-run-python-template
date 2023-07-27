@@ -8,10 +8,10 @@ services:
       dockerfile: Dockerfile
     entrypoint: uvicorn
     command:
-      - app.main:app
+      - server.main:app
       - --host
       - 0.0.0.0
       - --port
-      - "8000"
+      - "8080"
     ports:
-      - "8000:8000"
+      - "8080:8080"
