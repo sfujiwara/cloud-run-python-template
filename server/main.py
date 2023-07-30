@@ -19,5 +19,5 @@ async def main(request: Request) -> Response:
 
 
 @app.get("/health")
-def healthz():
+def health():
     return "health"

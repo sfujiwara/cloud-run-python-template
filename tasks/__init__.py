@@ -5,7 +5,7 @@ import uvicorn
 @invoke.task
 def start(ctx):
     """Start API server."""
-    uvicorn.run(app="app.main:app", reload=True)
+    uvicorn.run(app="server.main:app", reload=True)
 
 
 @invoke.task
