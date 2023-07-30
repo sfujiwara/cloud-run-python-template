@@ -50,10 +50,14 @@ def deploy(ctx):
 
     cmd_lst = [
         "gcloud run deploy",
-        "--project", project,
-        "--platform", "managed",
-        "--region", region_cr,
-        "--image", image,
+        "--project",
+        project,
+        "--platform",
+        "managed",
+        "--region",
+        region_cr,
+        "--image",
+        image,
         "cloud-run-python-template",
     ]
     cmd = " ".join(cmd_lst)

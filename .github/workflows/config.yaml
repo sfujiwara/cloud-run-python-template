@@ -1,0 +1,30 @@
+name: Python
+on:
+  - push
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10.11"
+
+      - name: Install Dependencies
+        run: |
+          pip install poetry
+          poetry config virtualenvs.in-project true
+          poetry install
+
+      - name: Black
+        run: poetry run black --diff --check .
+
+      - name: Flake8
+        run: poetry run flake8
+
+      - name: isort
+        run: poetry run isort --diff --check .
