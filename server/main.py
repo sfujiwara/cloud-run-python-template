@@ -2,8 +2,11 @@ import logging
 import os
 import requests
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
+from fastapi.responses import JSONResponse
 from google.cloud.logging.handlers import StructuredLogHandler
 from pydantic import BaseModel, Field
 
@@ -63,10 +66,69 @@ async def main(
     logger.info(str(r.headers), extra={"trace": trace})
     logger.info("hello", extra={"trace": trace})
     logger.info("world", extra={"trace": trace})
-
+    # raise ValueError("raise value error")
+    raise HTTPException(status_code=500, detail="error")
     return Response(message="hi")
 
 
 @app.get("/health")
 def health():
     return "health"
+
+
+# Override defalut HTTPException handler.
+@app.exception_handler(HTTPException)
+def hundle_http_exception(request: Request, exc: HTTPException):
+    response = JSONResponse(
+        content={
+            "message": str(exc.detail),
+            "type": None,
+        },
+        status_code=exc.status_code,
+    )
+
+    return response
+
+
+# Override defalut RequestValidationError handler.
+@app.exception_handler(RequestValidationError)
+def hundle_request_validation_error(request: Request, exc: RequestValidationError):
+    
+    response = JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "message": exc.errors()[0]["msg"],
+            "type": exc.errors()[0]["type"],
+        },
+    )
+
+    return response
+
+
+# Hundle 404 error.
+@app.exception_handler(404)
+def hundle_request_validation_error(request: Request, exc: HTTPException):
+    
+    response = JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "message": "Not found",
+            "type": "not_found",
+        },
+    )
+
+    return response
+
+
+# Hundle other Python exceptions.
+@app.exception_handler(Exception)
+def hundle_other_exeptions(request: Request, exc: Exception):
+    response = JSONResponse(
+        content={
+            "message": f"{exc.__class__.__name__}: {str(exc)}",
+            "type": "internal_server_error",
+        },
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    )
+
+    return response
