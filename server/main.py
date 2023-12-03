@@ -1,50 +1,28 @@
 import logging
 import os
-import requests
 
 from fastapi import FastAPI, HTTPException, status
-from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from google.cloud.logging.handlers import StructuredLogHandler
 from pydantic import BaseModel, Field
 
+from .logging import CloudTraceFilter
+from .middleware import LogMiddleware
+from .context import cloud_trace_context
+
 
 app = FastAPI()
+app.add_middleware(LogMiddleware)
+
+handler = StructuredLogHandler()
+# handler.addFilter(CloudTraceFilter())
+handler.filters = [CloudTraceFilter()]
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.addHandler(StructuredLogHandler())
-
-
-def get_project_id() -> str:
-    """Get GCP project ID from meta data server.
-
-    Returns:
-        str: GCP project ID.
-    """
-
-    res = requests.get(
-        url="http://metadata/computeMetadata/v1/project/project-id",
-        headers={"Metadata-Flavor": "Google"}
-    )
-    project_id = str(res.content, "utf-8")
-
-    return project_id
-
-
-def get_trace(request: Request) -> str:
-    """Get trace ID from HTTP request instance.
-
-    """
-    x_cloud_trace_context = request.headers.get("x-cloud-trace-context")
-
-    if x_cloud_trace_context:
-        project_id = get_project_id()
-        trace_id = x_cloud_trace_context.split("/")[0]
-        return f"projects/{project_id}/traces/{trace_id}"
-    else:
-        return ""
+logger.setLevel(logging.DEBUG)
+logger.addHandler(handler)
 
 
 class RootRequest(BaseModel):
@@ -56,18 +34,15 @@ class Response(BaseModel):
 
 
 @app.post("/")
-async def main(
+def main(
     request: RootRequest,
     r: Request,
 ) -> Response:
-    trace = get_trace(request=r)
 
-    logger.info(str(os.environ), extra={"trace": trace})
-    logger.info(str(r.headers), extra={"trace": trace})
-    logger.info("hello", extra={"trace": trace})
-    logger.info("world", extra={"trace": trace})
-    # raise ValueError("raise value error")
-    raise HTTPException(status_code=500, detail="error")
+    logger.info("hello")
+    logger.debug(str(r.headers))
+    logger.debug(str(os.environ))
+    
     return Response(message="hi")
 
 
