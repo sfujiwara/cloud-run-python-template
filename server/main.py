@@ -1,6 +1,7 @@
 import logging
 import os
 
+import google.cloud.logging
 from fastapi import FastAPI, HTTPException, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
@@ -10,7 +11,6 @@ from pydantic import BaseModel, Field
 
 from .logging import CloudTraceFilter
 from .middleware import LogMiddleware
-from .context import cloud_trace_context
 
 
 app = FastAPI()
@@ -38,7 +38,8 @@ def main(
     request: RootRequest,
     r: Request,
 ) -> Response:
-
+    client = google.cloud.logging.Client()
+    logger.info(f"project: {client.project}")
     logger.info("hello")
     logger.debug(str(r.headers))
     logger.debug(str(os.environ))

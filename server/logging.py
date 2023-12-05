@@ -1,35 +1,12 @@
-import logging
-import os
-import requests
-from typing import Optional
-
+import google.cloud.logging
 from google.cloud.logging.handlers import CloudLoggingFilter
 from .context import cloud_trace_context
-
-
-def get_project_id() -> Optional[str]:
-    """Get GCP project ID from meta data server.
-
-    Returns:
-        str: GCP project ID.
-    """
-
-    if "K_REVISION" in os.environ.keys():
-        res = requests.get(
-            url="http://metadata/computeMetadata/v1/project/project-id",
-            headers={"Metadata-Flavor": "Google"}
-        )
-        project_id = str(res.content, "utf-8")
-    else:
-        project_id = None
-
-    return project_id
 
 
 class CloudTraceFilter(CloudLoggingFilter):
     def __init__(self):
         super(CloudTraceFilter, self).__init__()
-        self.project = get_project_id()
+        self.project = google.cloud.logging.Client().project
 
     def filter(self, record):
         ctc = cloud_trace_context.get()
