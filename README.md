@@ -26,7 +26,7 @@ curl \
   -X POST \
   -H "Content-Type: application/json" \
   -d '{"message": "hello"}' \
-  http://localhost:8080/
+  http://localhost:8000/
 ```
 
 ## Deployment
