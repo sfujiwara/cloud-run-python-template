@@ -1,4 +1,4 @@
-name: Python
+name: GitHub Actions
 on:
   - push
 
@@ -7,10 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.13.7"
 
       - uses: astral-sh/setup-uv@v7
         with:

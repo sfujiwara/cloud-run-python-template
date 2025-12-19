@@ -2,8 +2,9 @@
 
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![image](https://img.shields.io/pypi/l/ruff.svg)](https://github.com/astral-sh/ruff/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org)
+[![GitHub Actions](https://github.com/sfujiwara/cloud-run-python-template/actions/workflows/config.yaml/badge.svg)](https://github.com/sfujiwara/cloud-run-python-template/actions/workflows/config.yaml)
 
 ## Installation
 
