@@ -1,22 +1,20 @@
 # Cloud Run Python Template
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Python](https://img.shields.io/badge/python-3.10.11-blue)](https://www.python.org)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![image](https://img.shields.io/pypi/l/ruff.svg)](https://github.com/astral-sh/ruff/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org)
 
 ## Installation
 
 ```shell
-poetry install
-```
-
-```shell
-poetry shell
+uv sync
 ```
 
 ## Run API Server
 
 ```shell
-inv start
+uv run inv start
 ```
 
 You can send a sample request as below:
@@ -53,22 +51,14 @@ inv docker-push -f invoke.yaml
 inv deploy -f invoke.yaml
 ```
 
-## Formatter and Linter
-
-### Black
+## Linter
 
 ```shell
-black --diff --check .
+uv run ruff check
 ```
 
-### isort
+## Formatter
 
 ```shell
-isort --diff --check .
-```
-
-### Flake8
-
-```shell
-flake8
+uv run ruff format --diff
 ```

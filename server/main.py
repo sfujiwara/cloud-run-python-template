@@ -43,7 +43,7 @@ def main(
     logger.info("hello")
     logger.debug(str(r.headers))
     logger.debug(str(os.environ))
-    
+
     return Response(message="hi")
 
 
@@ -69,7 +69,6 @@ def hundle_http_exception(request: Request, exc: HTTPException):
 # Override defalut RequestValidationError handler.
 @app.exception_handler(RequestValidationError)
 def hundle_request_validation_error(request: Request, exc: RequestValidationError):
-    
     response = JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
@@ -83,8 +82,7 @@ def hundle_request_validation_error(request: Request, exc: RequestValidationErro
 
 # Hundle 404 error.
 @app.exception_handler(404)
-def hundle_request_validation_error(request: Request, exc: HTTPException):
-    
+def hundle_404_error(request: Request, exc: HTTPException):
     response = JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={

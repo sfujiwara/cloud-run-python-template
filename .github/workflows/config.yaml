@@ -6,25 +6,21 @@ jobs:
   python:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.13.7"
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.18"
 
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10.11"
+        run: uv python install
 
-      - name: Install Dependencies
-        run: |
-          pip install poetry
-          poetry config virtualenvs.in-project true
-          poetry install
+      - name: Lint
+        run: uv run ruff check
 
-      - name: Black
-        run: poetry run black --diff --check .
-
-      - name: Flake8
-        run: poetry run flake8
-
-      - name: isort
-        run: poetry run isort --diff --check .
+      - name: Format
+        run: uv run ruff format --diff
