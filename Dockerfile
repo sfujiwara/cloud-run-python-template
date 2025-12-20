@@ -16,4 +16,6 @@ COPY tasks.py tasks.py
 
 ENV PORT=8080
 
+SHELL ["/bin/bash", "-c"]
+
 CMD uv run uvicorn server.main:app --host 0.0.0.0 --port ${PORT}
