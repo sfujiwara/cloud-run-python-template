@@ -1,16 +1,19 @@
-# FROM python:3.10.11-slim
-FROM python:3.10.11
+FROM python:3.13.7
 
-# Setup Poetry.
-RUN pip install -U pip
-RUN pip install poetry
-RUN poetry config virtualenvs.create false
+WORKDIR /app
 
-# Install Python dependencies.
+# Install uv.
+# https://docs.astral.sh/uv/guides/integration/docker/#installing-uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Setup Python packages.
 COPY pyproject.toml pyproject.toml
-COPY poetry.lock poetry.lock
-RUN poetry install
+COPY uv.lock uv.lock
+RUN uv sync --locked
 
 COPY server server
+COPY tasks.py tasks.py
 
-CMD uvicorn server.main:app --host 0.0.0.0 --port ${PORT}
+ENV PORT=8080
+
+CMD uv run uvicorn server.main:app --host 0.0.0.0 --port ${PORT}
