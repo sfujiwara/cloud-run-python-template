@@ -8,6 +8,10 @@ dependencies = [
     "fastapi>=0.125.0",
     "google-cloud-logging>=3.13.0",
     "invoke>=2.2.1",
+    "opentelemetry-api>=1.39.1",
+    "opentelemetry-exporter-gcp-trace>=1.11.0",
+    "opentelemetry-instrumentation-fastapi>=0.60b1",
+    "opentelemetry-sdk>=1.39.1",
     "uvicorn>=0.38.0",
 ]
 
