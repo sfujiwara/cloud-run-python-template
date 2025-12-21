@@ -2,17 +2,11 @@ version: "3"
 
 services:
   cloud-run-python-template:
-    image: ${REGION}-docker.pkg.dev/${PROJECT}/${REPOSITORY}/cloud-run-python-template
-    platform: linux/x86_64
+    image: cloud-run-python-template
     build:
       context: .
       dockerfile: Dockerfile
-    entrypoint: uvicorn
-    command:
-      - server.main:app
-      - --host
-      - 0.0.0.0
-      - --port
-      - "8080"
+    volumes:
+      - ~/.config/gcloud:/root/.config/gcloud
     ports:
       - "8080:8080"
