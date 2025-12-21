@@ -12,54 +12,46 @@
 uv sync
 ```
 
-## Run API Server
+## Development
+
+### Run API Server
 
 ```shell
 uv run inv start
 ```
 
-You can send a sample request as below:
+```shell
+uv run inv docker-build
+```
 
 ```shell
-curl \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"message": "hello"}' \
-  http://localhost:8000/
+uv run inv docker-run
+```
+
+### Linter
+
+```shell
+uv run ruff check
+```
+
+### Formatter
+
+```shell
+uv run ruff format --diff
 ```
 
 ## Deployment
 
 To deploy your application to Cloud Run, you have to edit [`invoke.yaml`](invoke.yaml) (or create another [Invoke](https://github.com/pyinvoke/invoke) config file) for your Google Cloud Platform project.
 
-### Build Docker Image
+### Build and Push Docker Image to Artifact Registry
 
 ```shell
-inv docker-build -f invoke.yaml
+uv run inv gcloud-builds-submit -f invoke.yaml
 ```
 
-You can try the Docker image with `inv docker-run -f invoke.yaml` command.
-
-### Push Docker Image to Artifact Registry
+### Deploy Docker Image to Cloud Run
 
 ```shell
-inv docker-push -f invoke.yaml
-```
-
-### Deploy to Cloud Run
-
-```shell
-inv deploy -f invoke.yaml
-```
-
-## Linter
-
-```shell
-uv run ruff check
-```
-
-## Formatter
-
-```shell
-uv run ruff format --diff
+uv run inv gcloud-run-deploy -f invoke.yaml
 ```
