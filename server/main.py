@@ -6,24 +6,21 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
-from google.cloud.logging.handlers import StructuredLogHandler
+from opentelemetry import trace
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from pydantic import BaseModel, Field
 
-from .logging import CloudTraceFilter
-from .middleware import LogMiddleware
-
-
-app = FastAPI()
-app.add_middleware(LogMiddleware)
-
-handler = StructuredLogHandler()
-# handler.addFilter(CloudTraceFilter())
-handler.filters = [CloudTraceFilter()]
+from .logging import setup_structured_logging
+from .otel import setup_opentelemetry
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-logger.addHandler(handler)
 
+setup_opentelemetry()
+setup_structured_logging()
+
+app = FastAPI()
+
+FastAPIInstrumentor().instrument_app(app)
 
 class RootRequest(BaseModel):
     message: str = Field()
@@ -48,14 +45,22 @@ def main(
 
 
 @app.get("/health")
-def health():
-    return "health"
+def health() -> str:
+    tracer = trace.get_tracer_provider().get_tracer(__name__)
+    logger.info("health check 0")
+    with tracer.start_as_current_span("get_sample"):
+        logger.info("health check 1")
+        logger.warning("health check 2")
+        logger.error("health check 3")
+        print("hello")
+
+        return "health"
 
 
 # Override defalut HTTPException handler.
 @app.exception_handler(HTTPException)
-def hundle_http_exception(request: Request, exc: HTTPException):
-    response = JSONResponse(
+def hundle_http_exception(request: Request, exc: HTTPException) -> JSONResponse:
+    return JSONResponse(
         content={
             "message": str(exc.detail),
             "type": None,
@@ -63,13 +68,14 @@ def hundle_http_exception(request: Request, exc: HTTPException):
         status_code=exc.status_code,
     )
 
-    return response
-
 
 # Override defalut RequestValidationError handler.
 @app.exception_handler(RequestValidationError)
-def hundle_request_validation_error(request: Request, exc: RequestValidationError):
-    response = JSONResponse(
+def hundle_request_validation_error(
+    request: Request,
+    exc: RequestValidationError,
+) -> JSONResponse:
+    return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             "message": exc.errors()[0]["msg"],
@@ -77,32 +83,26 @@ def hundle_request_validation_error(request: Request, exc: RequestValidationErro
         },
     )
 
-    return response
-
 
 # Hundle 404 error.
 @app.exception_handler(404)
-def hundle_404_error(request: Request, exc: HTTPException):
-    response = JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+def hundle_404_error(request: Request, exc: HTTPException) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
         content={
             "message": "Not found",
             "type": "not_found",
         },
     )
 
-    return response
-
 
 # Hundle other Python exceptions.
 @app.exception_handler(Exception)
-def hundle_other_exeptions(request: Request, exc: Exception):
-    response = JSONResponse(
+def hundle_other_exeptions(request: Request, exc: Exception) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
             "message": f"{exc.__class__.__name__}: {str(exc)}",
             "type": "internal_server_error",
         },
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
-
-    return response
